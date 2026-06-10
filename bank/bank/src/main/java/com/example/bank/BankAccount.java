@@ -1,11 +1,9 @@
 package com.example.bank;
 
 import jakarta.persistence.*;
-import lombok.Data;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.ResponseStatus;
 
 
 
@@ -13,6 +11,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 @Table(name="BANK_ACCOUNT")
 @Getter
 @Setter
+@NoArgsConstructor
 public class BankAccount {
 	@GeneratedValue
 	@Id
@@ -21,17 +20,20 @@ public class BankAccount {
 	@Column(name="HOLDER")
 	private String accountHolder;
 
+	@Column(name="PASSWORD")
+	private String password;
+
 	@Column(name="BALANCE")
 	private double balance;
 
 	@Column(name="DELETED")
 	private boolean deleted = false;
 
-	public BankAccount() {
-	}
 
-	public BankAccount(String accountHolder) {
+
+	public BankAccount(String accountHolder, String password) {
 		this.accountHolder = accountHolder;
+		this.password = password;
 
 	}
 

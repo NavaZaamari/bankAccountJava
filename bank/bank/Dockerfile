@@ -1,9 +1,9 @@
-FROM ubuntu:latest
-LABEL authors="navaz"
 FROM bellsoft/liberica-openjdk-alpine:26
+
+LABEL authors="navaz"
+
 WORKDIR /app
 
 COPY target/*.jar app.jar
-EXPOSE 8080
 
 ENTRYPOINT ["java", "-jar", "app.jar"]

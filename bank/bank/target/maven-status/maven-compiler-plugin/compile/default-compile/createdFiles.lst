@@ -3,6 +3,7 @@ com\example\bank\TransactionRepository.class
 com\example\bank\InsufficientBalanceException.class
 com\example\bank\BankAccountRepository.class
 com\example\bank\BankAccountService.class
+com\example\bank\AppConfig.class
 com\example\bank\BankApplication.class
 com\example\bank\SecurityConfig.class
 com\example\bank\dto\AccountRequest.class

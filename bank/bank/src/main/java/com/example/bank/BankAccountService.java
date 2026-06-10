@@ -2,8 +2,12 @@ package com.example.bank;
 
 import com.example.bank.dto.AccountRequest;
 import jakarta.transaction.Transactional;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
@@ -17,16 +21,27 @@ public class BankAccountService {
 
     private final BankAccountRepository repository;
     private final TransactionRepository transactionRepository;
+    private final PasswordEncoder passwordEncoder;
 
-    public BankAccountService(BankAccountRepository repository, TransactionRepository transactionRepository) {
+    public BankAccountService(BankAccountRepository repository, TransactionRepository transactionRepository, PasswordEncoder passwordEncoder) {
         this.repository = repository;
         this.transactionRepository = transactionRepository;
+        this.passwordEncoder = passwordEncoder;
+
     }
 
 
-    public BankAccount createAccount(String holder) {
-        return repository.save(new BankAccount(holder));
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        BankAccount account = repository.findByAccountHolderAndDeletedFalse(username)
+                .orElseThrow(() -> new UsernameNotFoundException("Account holder not found: " + username));
+
+        return User.withUsername(account.getAccountHolder())
+                .password(account.getPassword())
+                .authorities("USER")
+                .build();
     }
+
+
 
     private AccountResponse convertToResponse(BankAccount account) {
         return new AccountResponse(
@@ -36,7 +51,7 @@ public class BankAccountService {
         );
     }
     public AccountResponse createAccount(AccountRequest request) {
-        BankAccount account = new BankAccount(request.holder());
+        BankAccount account = new BankAccount(request.holder(), passwordEncoder.encode(request.password()));
         BankAccount savedAccount = repository.save(account);
         return convertToResponse(savedAccount);
     }

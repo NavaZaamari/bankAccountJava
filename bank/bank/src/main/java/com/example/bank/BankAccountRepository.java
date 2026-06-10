@@ -10,4 +10,6 @@ import java.util.Optional;
 public interface BankAccountRepository extends CrudRepository<BankAccount, Long> {
     Optional<BankAccount> findByIdAndDeletedFalse(Long id);
     List<BankAccount> findByDeletedFalse();
+
+    Optional<BankAccount> findByAccountHolderAndDeletedFalse(String accountHolder);
 }
