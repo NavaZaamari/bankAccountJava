@@ -23,7 +23,7 @@ import static org.springframework.security.config.Customizer.withDefaults;
 public class SecurityConfig {
 
     private final JwtAuthenticationFilter jwtFilter;
-    private final BankAccountService bankAccountService;
+    private final UserDetailsService userDetailsService;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -35,9 +35,9 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.DELETE, "/accounts/**").hasRole("ADMIN")
                         .requestMatchers("/accounts/getall").hasRole("ADMIN")
                         .requestMatchers("/accounts/deposit/**", "/accounts/withdraw/**").hasAnyRole("USER", "ADMIN")
-                        .anyRequest().authenticated()
+                        .anyRequest().permitAll()
                 )
-                .userDetailsService(bankAccountService)
+                .userDetailsService(userDetailsService)
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
     }
@@ -55,11 +55,6 @@ public class SecurityConfig {
             }
             return bankAccountService.loadUserByUsername(username);
         };
-    }
-
-    @Bean
-    public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
-        return config.getAuthenticationManager();
     }
 
 }
