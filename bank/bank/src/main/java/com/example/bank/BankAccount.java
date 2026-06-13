@@ -1,6 +1,7 @@
 package com.example.bank;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -12,6 +13,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
+@AllArgsConstructor
 public class BankAccount {
 	@GeneratedValue
 	@Id
@@ -28,6 +30,7 @@ public class BankAccount {
 
 	@Column(name="DELETED")
 	private boolean deleted = false;
+
 
 
 

@@ -1,13 +1,11 @@
 package com.example.bank;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.context.annotation.Configuration;
 
 import java.time.LocalDateTime;
 
@@ -22,9 +20,17 @@ public class Transactions {
     @Id
     @GeneratedValue
     private long id;
+
+    @Column(name="TYPE")
     private String type;
+
+    @Column(name="TIME_STAMP")
     private LocalDateTime timestamp;
+
+    @Column(name="AMOUNT")
     private double amount;
+
+    @Column(name="ACCOUNT_ID")
     private Long accountId;
 
     public Transactions(String type, Long accountId, double amount) {
