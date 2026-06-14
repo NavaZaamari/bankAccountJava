@@ -35,7 +35,7 @@ public class BankAccountService {
         if ("admin".equalsIgnoreCase(username)) {
             return User.withUsername("admin")
                     .password(passwordEncoder.encode("admin123"))
-                    .roles("ADMIN")
+                    .authorities("ADMIN")
                     .build();
         }
         BankAccount account = repository.findByAccountHolderAndDeletedFalse(username)
@@ -44,7 +44,7 @@ public class BankAccountService {
 
         return User.withUsername(account.getAccountHolder())
                 .password(account.getPassword())
-                .roles("USER")
+                .authorities("USER")
                 .build();
     }
 
