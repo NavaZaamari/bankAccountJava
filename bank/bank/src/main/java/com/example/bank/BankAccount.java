@@ -1,5 +1,4 @@
 package com.example.bank;
-
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -19,7 +18,7 @@ public class BankAccount {
 	@Id
 	private Long id;
 
-	@Column(name="HOLDER")
+	@Column(name="HOLDER", unique=true)
 	private String accountHolder;
 
 	@Column(name="PASSWORD")

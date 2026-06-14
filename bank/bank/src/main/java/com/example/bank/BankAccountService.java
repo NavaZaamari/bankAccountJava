@@ -17,7 +17,7 @@ import com.example.bank.dto.AccountResponse;
 
 
 @Service
-public class BankAccountService implements UserDetailsService {
+public class BankAccountService {
 
     private final BankAccountRepository repository;
     private final TransactionRepository transactionRepository;
@@ -28,24 +28,6 @@ public class BankAccountService implements UserDetailsService {
         this.transactionRepository = transactionRepository;
         this.passwordEncoder = passwordEncoder;
 
-    }
-
-
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        BankAccount account = repository.findByAccountHolderAndDeletedFalse(username)
-                .orElseThrow(() -> new UsernameNotFoundException("Account holder not found: " + username));
-
-        if ("admin".equalsIgnoreCase(username)) {
-            return User.withUsername("admin")
-                    .password(passwordEncoder.encode("admin123"))
-                    .roles("ADMIN")
-                    .build();
-            }
-
-        return User.withUsername(account.getAccountHolder())
-                .password(account.getPassword())
-                .roles("USER")
-                .build();
     }
 
 

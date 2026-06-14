@@ -7,6 +7,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -19,7 +20,7 @@ public class AuthController {
 
     private final AuthenticationManager authenticationManager;
     private final JwtService jwtService;
-    private final BankAccountService bankAccountService;
+    private final SecurityConfig  securityConfig;
 
     @PostMapping("/login")
     public AuthResponse login(@RequestBody AuthRequest request) {
@@ -31,7 +32,7 @@ public class AuthController {
                 )
         );
 
-        UserDetails user = bankAccountService.loadUserByUsername(request.username());
+        UserDetails user = securityConfig.loadUserByUsername(request.username());
         String token = jwtService.generateToken(user);
         return new AuthResponse(token);
     }

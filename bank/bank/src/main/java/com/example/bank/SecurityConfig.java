@@ -11,6 +11,7 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
@@ -23,10 +24,13 @@ import static org.springframework.security.config.Customizer.withDefaults;
 public class SecurityConfig {
 
     private final JwtAuthenticationFilter jwtFilter;
-    private final UserDetailsService userDetailsService;
+    private final PasswordEncoder passwordEncoder;
+    private final BankAccountRepository repository;
+
+
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain securityFilterChain(HttpSecurity http, UserDetailsService userDetailsService) throws Exception {
         return http
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
@@ -43,18 +47,21 @@ public class SecurityConfig {
     }
 
     @Bean
-    public UserDetailsService userDetailsService(BankAccountService bankAccountService, PasswordEncoder passwordEncoder) {
-        UserDetails admin = User.withUsername("admin")
-                .password(passwordEncoder.encode("admin123"))
-                .authorities("ADMIN")
-                .build();
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        if ("admin".equalsIgnoreCase(username)) {
+            return User.withUsername("admin")
+                    .password(passwordEncoder.encode("admin123"))
+                    .roles("ADMIN")
+                    .build();
+        }
+        BankAccount account = repository.findByAccountHolderAndDeletedFalse(username)
+                .orElseThrow(() -> new UsernameNotFoundException("Account holder not found: " + username));
 
-        return username -> {
-            if ("admin".equalsIgnoreCase(username)) {
-                return admin;
-            }
-            return bankAccountService.loadUserByUsername(username);
-        };
+
+        return User.withUsername(account.getAccountHolder())
+                .password(account.getPassword())
+                .roles("USER")
+                .build();
     }
 
 }
