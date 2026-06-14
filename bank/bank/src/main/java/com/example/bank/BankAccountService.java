@@ -2,6 +2,7 @@ package com.example.bank;
 
 import com.example.bank.dto.AccountRequest;
 import jakarta.transaction.Transactional;
+import org.springframework.context.annotation.Bean;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -28,6 +29,23 @@ public class BankAccountService {
         this.transactionRepository = transactionRepository;
         this.passwordEncoder = passwordEncoder;
 
+    }
+
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        if ("admin".equalsIgnoreCase(username)) {
+            return User.withUsername("admin")
+                    .password(passwordEncoder.encode("admin123"))
+                    .roles("ADMIN")
+                    .build();
+        }
+        BankAccount account = repository.findByAccountHolderAndDeletedFalse(username)
+                .orElseThrow(() -> new UsernameNotFoundException("Account holder not found: " + username));
+
+
+        return User.withUsername(account.getAccountHolder())
+                .password(account.getPassword())
+                .roles("USER")
+                .build();
     }
 
 

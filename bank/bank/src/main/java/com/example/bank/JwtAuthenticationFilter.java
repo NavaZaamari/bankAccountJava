@@ -1,5 +1,4 @@
 package com.example.bank;
-
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -10,30 +9,22 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
-
 import java.io.IOException;
+
 
 @Component
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtService jwtService;
-    private final SecurityConfig securityConfig;
+    private final BankAccountService bankAccountService;
 
-    public JwtAuthenticationFilter(
-            JwtService jwtService,
-            SecurityConfig securityConfig
-    ) {
+    public JwtAuthenticationFilter(JwtService jwtService, BankAccountService bankAccountService) {
         this.jwtService = jwtService;
-        this.securityConfig = securityConfig;
+        this.bankAccountService = bankAccountService;
     }
 
     @Override
-    protected void doFilterInternal(
-            HttpServletRequest request,
-            HttpServletResponse response,
-            FilterChain filterChain
-    ) throws ServletException, IOException {
-
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         String authHeader = request.getHeader("Authorization");
 
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
@@ -50,7 +41,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                     SecurityContextHolder.getContext().getAuthentication() == null) {
 
                 UserDetails userDetails =
-                        securityConfig.loadUserByUsername(username);
+                        bankAccountService.loadUserByUsername(username);
 
                 if (jwtService.isTokenValid(token, userDetails)) {
 
@@ -58,14 +49,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                             new UsernamePasswordAuthenticationToken(
                                     userDetails,
                                     null,
-                                    userDetails.getAuthorities()
-                            );
-
+                                    userDetails.getAuthorities());
                     authentication.setDetails(
                             new WebAuthenticationDetailsSource()
-                                    .buildDetails(request)
-                    );
-
+                                    .buildDetails(request));
                     SecurityContextHolder.getContext()
                             .setAuthentication(authentication);
                 }

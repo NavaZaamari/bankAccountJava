@@ -20,7 +20,7 @@ public class AuthController {
 
     private final AuthenticationManager authenticationManager;
     private final JwtService jwtService;
-    private final SecurityConfig  securityConfig;
+    private final BankAccountService bankAccountService;
 
     @PostMapping("/login")
     public AuthResponse login(@RequestBody AuthRequest request) {
@@ -32,7 +32,7 @@ public class AuthController {
                 )
         );
 
-        UserDetails user = securityConfig.loadUserByUsername(request.username());
+        UserDetails user = bankAccountService.loadUserByUsername(request.username());
         String token = jwtService.generateToken(user);
         return new AuthResponse(token);
     }
