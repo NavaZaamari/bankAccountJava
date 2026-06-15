@@ -22,14 +22,16 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/auth/**", "/accounts").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/auth/**", "/accounts").permitAll()
                         .requestMatchers(HttpMethod.DELETE, "/accounts/**").hasAuthority("ADMIN")
                         .requestMatchers(HttpMethod.GET, "/accounts/getall").hasAuthority("ADMIN")
-                        .requestMatchers("/accounts/deposit/**", "/accounts/withdraw/**").hasAnyAuthority("USER", "ADMIN")
+                        .requestMatchers(HttpMethod.GET, "/transactions/**").hasAnyAuthority("ADMIN", "USER")
+                        .requestMatchers(HttpMethod.PUT, "/accounts/deposit/**", "/accounts/withdraw/**").hasAnyAuthority("USER", "ADMIN")
                         .anyRequest().authenticated()
                 )
                 .userDetailsService(userDetailsService)
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
     }
+
 }
