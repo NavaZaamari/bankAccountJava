@@ -2,16 +2,14 @@ package com.example.bank;
 
 import com.example.bank.dto.AccountRequest;
 import jakarta.transaction.Transactional;
-import org.springframework.context.annotation.Bean;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
+
 import com.example.bank.dto.AccountResponse;
 
 
@@ -38,8 +36,7 @@ public class BankAccountService {
                     .authorities("ADMIN")
                     .build();
         }
-        BankAccount account = repository.findByAccountHolderAndDeletedFalse(username)
-                .orElseThrow(() -> new UsernameNotFoundException("Account holder not found: " + username));
+        BankAccount account = repository.findByAccountHolderAndDeletedFalse(username);
 
 
         return User.withUsername(account.getAccountHolder())
@@ -102,5 +99,20 @@ public class BankAccountService {
         account.setDeleted(true);
         BankAccount savedAccount = repository.save(account);
         return convertToResponse(savedAccount);
+    }
+
+    @Transactional
+    public void transfer(Long fromId, Long toId, double amount) {
+        BankAccount sender =  repository.findByIdAndDeletedFalse(fromId)
+                .orElseThrow(() -> new RuntimeException("Account not found"));
+        BankAccount receiver = repository.findByIdAndDeletedFalse(toId)
+                .orElseThrow(() -> new RuntimeException("Account not found"));
+
+        sender.withdraw(amount);
+        receiver.deposit(amount);
+        repository.save(sender);
+        repository.save(receiver);
+
+        transactionRepository.save(new Transactions("TRANSFER", fromId, amount));
     }
 }

@@ -19,8 +19,7 @@ public class AppConfig {
 
     @Bean
     public UserDetailsService userDetailsService() {
-        return username -> (org.springframework.security.core.userdetails.UserDetails) repository.findByAccountHolderAndDeletedFalse(username) // Use your repository find method
-                .orElseThrow(() -> new UsernameNotFoundException("User not found: " + username));
+        return username -> (org.springframework.security.core.userdetails.UserDetails) repository.findByAccountHolderAndDeletedFalse(username);
     }
     @Bean
     public PasswordEncoder passwordEncoder() {
