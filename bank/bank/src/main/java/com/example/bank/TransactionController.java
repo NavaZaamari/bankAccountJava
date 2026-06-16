@@ -34,7 +34,7 @@ public class TransactionController {
         String username = authentication.getName();
         BankAccount sender = repository.findByAccountHolderAndDeletedFalse(username);
 
-        bankAccountService.transfer(sender.getId(), request.toAccountId(), request.amount());
+        bankAccountService.transfer(sender.getId(), request.toCardNumber(), request.amount());
 
         return  ResponseEntity.ok("Transfer successful");
     }

@@ -7,6 +7,8 @@ import java.util.Optional;
 
 @Repository
 public interface BankAccountRepository extends CrudRepository<BankAccount, Long> {
+    boolean existsByCardNumber(String cardNumber);
+    BankAccount findByCardNumber(String cardNumber);
     Optional<BankAccount> findByIdAndDeletedFalse(Long id);
     List<BankAccount> findByDeletedFalse();
 

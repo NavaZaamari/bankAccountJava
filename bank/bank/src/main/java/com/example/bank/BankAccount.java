@@ -27,6 +27,9 @@ public class BankAccount implements UserDetails {
 	@Column(name="BALANCE")
 	private double balance;
 
+	@Column(name="CARD_NUMBER")
+	private String cardNumber;
+
 	@Column(name="DELETED")
 	private boolean deleted = false;
 
