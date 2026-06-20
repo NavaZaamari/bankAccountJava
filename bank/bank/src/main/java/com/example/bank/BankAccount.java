@@ -5,6 +5,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import java.util.Collection;
 import java.util.List;
+import java.util.UUID;
 
 
 @Entity
@@ -14,9 +15,10 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class BankAccount implements UserDetails {
-	@GeneratedValue
+	
 	@Id
-	private Long id;
+	@GeneratedValue(strategy = GenerationType.UUID)
+	private UUID id;
 
 	@Column(name="HOLDER", unique=true)
 	private String accountHolder;
