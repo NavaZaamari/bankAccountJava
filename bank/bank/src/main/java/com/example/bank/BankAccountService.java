@@ -9,6 +9,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Random;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import com.example.bank.dto.AccountResponse;
@@ -81,7 +82,7 @@ public class BankAccountService {
     }
 
     @Transactional
-    public AccountResponse depositAccount(Long id, double amount) {
+    public AccountResponse depositAccount(UUID id, double amount) {
         BankAccount account = repository.findByIdAndDeletedFalse(id)
                 .orElseThrow(() -> new RuntimeException("Account not found"));
 
@@ -90,7 +91,7 @@ public class BankAccountService {
         return convertToResponse(repository.save(account));
     }
     @Transactional
-    public AccountResponse withdrawAccount(Long id, double amount) {
+    public AccountResponse withdrawAccount(UUID id, double amount) {
         BankAccount account = repository.findByIdAndDeletedFalse(id)
                 .orElseThrow(() -> new RuntimeException("Account not found"));
 
@@ -100,14 +101,14 @@ public class BankAccountService {
         return convertToResponse(repository.save(account));
     }
 
-    public AccountResponse displayBalanceAccount(Long id) {
+    public AccountResponse displayBalanceAccount(UUID id) {
         BankAccount account = repository.findByIdAndDeletedFalse(id)
                 .orElseThrow(() -> new RuntimeException("Account not found"));
 
         return convertToResponse(account);
     }
 
-    public AccountResponse deleteAccount(Long id) {
+    public AccountResponse deleteAccount(UUID id) {
         BankAccount account = repository.findByIdAndDeletedFalse(id)
                 .orElseThrow(() -> new RuntimeException("Account not found"));
 
@@ -117,7 +118,7 @@ public class BankAccountService {
     }
 
     @Transactional
-    public void transfer(Long fromId, String toCardNumber, double amount) {
+    public void transfer(UUID fromId, String toCardNumber, double amount) {
         BankAccount sender =  repository.findByIdAndDeletedFalse(fromId)
                 .orElseThrow(() -> new RuntimeException("Account not found"));
         BankAccount receiver = repository.findByCardNumber(toCardNumber);

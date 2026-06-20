@@ -2,9 +2,9 @@ package com.example.bank;
 
 import jakarta.persistence.*;
 import lombok.*;
-import org.springframework.context.annotation.Configuration;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Getter
 @Setter
@@ -28,9 +28,9 @@ public class Transactions {
     private double amount;
 
     @Column(name="ACCOUNT_ID")
-    private Long accountId;
+    private UUID accountId;
 
-    public Transactions(String type, Long accountId, double amount) {
+    public Transactions(String type, UUID accountId, double amount) {
         this.accountId = accountId;
         this.amount = amount;
         this.type = type;

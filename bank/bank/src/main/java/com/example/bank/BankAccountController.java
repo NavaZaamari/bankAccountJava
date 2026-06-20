@@ -5,6 +5,7 @@ import com.example.bank.dto.TransactionRequest;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
+import java.util.UUID;
 
 
 @RestController
@@ -51,7 +52,7 @@ public class BankAccountController {
     }
 
     @DeleteMapping("/")
-    public AccountResponse delete(@RequestBody Long id) {
+    public AccountResponse delete(@RequestBody UUID id) {
         return service.deleteAccount(id);
     }
 
