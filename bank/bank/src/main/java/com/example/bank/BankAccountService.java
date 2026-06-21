@@ -2,6 +2,7 @@ package com.example.bank;
 
 import com.example.bank.dto.AccountRequest;
 import jakarta.transaction.Transactional;
+import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -18,6 +19,7 @@ import com.example.bank.dto.AccountResponse;
 
 
 @Service
+@EnableAsync
 public class BankAccountService {
 
     private final BankAccountRepository repository;

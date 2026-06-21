@@ -1,4 +1,6 @@
 package com.example.bank;
+import jakarta.persistence.LockModeType;
+import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 
@@ -11,6 +13,7 @@ public interface BankAccountRepository extends CrudRepository<BankAccount, Long>
     boolean existsByCardNumber(String cardNumber);
     BankAccount findByCardNumber(String cardNumber);
     Optional<BankAccount> findByIdAndDeletedFalse(UUID id);
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
     List<BankAccount> findByDeletedFalse();
 
     BankAccount findByAccountHolderAndDeletedFalse(String accountHolder);
