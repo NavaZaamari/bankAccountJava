@@ -1,0 +1,15 @@
+services:
+
+  kafka:
+    image: apache/kafka:latest
+    container_name: kafka
+    ports:
+      - "9092:9092"
+
+  bank-app:
+    build: .
+    container_name: bank-app
+    ports:
+      - "8080:8080"
+    depends_on:
+      - kafka

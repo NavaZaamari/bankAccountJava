@@ -11,9 +11,9 @@ import java.util.UUID;
 @Repository
 public interface BankAccountRepository extends CrudRepository<BankAccount, Long> {
     boolean existsByCardNumber(String cardNumber);
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
     BankAccount findByCardNumber(String cardNumber);
     Optional<BankAccount> findByIdAndDeletedFalse(UUID id);
-    @Lock(LockModeType.PESSIMISTIC_WRITE)
     List<BankAccount> findByDeletedFalse();
 
     BankAccount findByAccountHolderAndDeletedFalse(String accountHolder);

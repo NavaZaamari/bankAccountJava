@@ -1,8 +1,10 @@
 package com.example.bank;
 
 import com.example.bank.dto.AccountRequest;
-import jakarta.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.EnableAsync;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -19,17 +21,20 @@ import com.example.bank.dto.AccountResponse;
 
 
 @Service
-@EnableAsync
 public class BankAccountService {
 
     private final BankAccountRepository repository;
     private final TransactionRepository transactionRepository;
     private final PasswordEncoder passwordEncoder;
+    private final TransactionProducer producer;
 
-    public BankAccountService(BankAccountRepository repository, TransactionRepository transactionRepository, PasswordEncoder passwordEncoder) {
+    public BankAccountService(BankAccountRepository repository, TransactionRepository transactionRepository,
+                              PasswordEncoder passwordEncoder,
+                              TransactionProducer producer) {
         this.repository = repository;
         this.transactionRepository = transactionRepository;
         this.passwordEncoder = passwordEncoder;
+        this.producer = producer;
 
     }
 
@@ -90,6 +95,7 @@ public class BankAccountService {
 
         transactionRepository.save(new Transactions("DEPOSIT", id, amount));
         account.deposit(amount);
+        producer.sendTransaction("Deposited " + amount + "to " + account.getAccountHolder());
         return convertToResponse(repository.save(account));
     }
     @Transactional
@@ -97,9 +103,13 @@ public class BankAccountService {
         BankAccount account = repository.findByIdAndDeletedFalse(id)
                 .orElseThrow(() -> new RuntimeException("Account not found"));
 
+        // nj
+
+        //
+
         transactionRepository.save(new Transactions("WITHDRAW", id, amount));
         account.withdraw(amount);
-
+        producer.sendTransaction("Withdrawn " + amount + "from " + account.getAccountHolder());
         return convertToResponse(repository.save(account));
     }
 
@@ -131,5 +141,14 @@ public class BankAccountService {
         repository.save(receiver);
 
         transactionRepository.save(new Transactions("TRANSFER", fromId, amount));
+    }
+
+    @Scheduled(cron = "0 0 1 1 * *")
+    public void monthlyInterest() {
+        repository.findByDeletedFalse().forEach(account -> {
+            account.deposit(account.getBalance() * 0.01);
+            repository.save(account);
+        });
+
     }
 }
